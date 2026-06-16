@@ -6,6 +6,7 @@ on:
   workflow_dispatch:  # Manual trigger from GitHub Actions UI
 
 env:
+  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
   AWS_REGION: eu-central-1
 
 jobs:
