@@ -3,7 +3,7 @@ WORKDIR /app
 RUN apk add --no-cache curl
 
 FROM base AS deps
-COPY package*.json ./
+COPY package.json package-lock.json ./
 RUN npm ci --only=production && npm cache clean --force
 
 FROM base AS final
