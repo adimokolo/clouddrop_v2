@@ -5,7 +5,7 @@ ENV REACT_APP_API_URL=$REACT_APP_API_URL
 COPY package*.json ./
 RUN npm install --legacy-peer-deps
 COPY . .
-RUN npm run build
+RUN npm install --legacy-peer-deps && npm install ajv@^6.12.6 --legacy-peer-deps
 
 FROM nginx:alpine AS final
 COPY --from=builder /app/build /usr/share/nginx/html
