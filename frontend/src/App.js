@@ -3,13 +3,21 @@ import Dashboard from './components/Dashboard';
 import UploadZone from './components/UploadZone';
 import FileManager from './components/FileManager';
 import StatsPanel from './components/StatsPanel';
+import Login from './components/Login';
+import { isAuthenticated, logout } from './utils/apiClient';
 import './App.css';
 
 export default function App() {
+  const [authed, setAuthed] = useState(isAuthenticated());
   const [activeView, setActiveView] = useState('dashboard');
   const [refreshKey, setRefreshKey] = useState(0);
 
   const handleUploadComplete = () => setRefreshKey(k => k + 1);
+  const handleLoginSuccess = () => setAuthed(true);
+
+  if (!authed) {
+    return <Login onLoginSuccess={handleLoginSuccess} />;
+  }
 
   return (
     <div className="app">
@@ -17,9 +25,9 @@ export default function App() {
         <div className="sidebar-logo">
           <div className="logo-icon">
             <svg viewBox="0 0 40 40" fill="none">
-              <path d="M20 4L36 12V28L20 36L4 28V12L20 4Z" fill="var(--accent)" opacity="0.15"/>
-              <path d="M20 4L36 12V28L20 36L4 28V12L20 4Z" stroke="var(--accent)" strokeWidth="1.5"/>
-              <path d="M13 20L18 25L27 16" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M20 4L36 12V28L20 36L4 28V12L20 4Z" fill="var(--accent)" opacity="0.15" />
+              <path d="M20 4L36 12V28L20 36L4 28V12L20 4Z" stroke="var(--accent)" strokeWidth="1.5" />
+              <path d="M13 20L18 25L27 16" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
           <span className="logo-text">CloudDrop</span>
@@ -47,12 +55,12 @@ export default function App() {
               <span>Storage Used</span>
               <span className="meter-pct">64%</span>
             </div>
-            <div className="meter-track"><div className="meter-fill" style={{width:'64%'}}/></div>
+            <div className="meter-track"><div className="meter-fill" style={{ width: '64%' }} /></div>
             <span className="meter-detail">6.4 GB of 10 GB</span>
           </div>
+          <button className="logout-btn" onClick={logout}>Sign Out</button>
         </div>
       </aside>
-
       <main className="main-content">
         <header className="topbar">
           <div className="topbar-title">
@@ -62,11 +70,10 @@ export default function App() {
             {activeView === 'stats' && 'Analytics'}
           </div>
           <div className="topbar-actions">
-            <div className="env-badge">AWS · us-east-1</div>
+            <div className="env-badge">AWS · eu-central-1</div>
             <div className="user-avatar">A</div>
           </div>
         </header>
-
         <div className="view-content">
           {activeView === 'dashboard' && (
             <Dashboard onNavigate={setActiveView} refreshKey={refreshKey} />
