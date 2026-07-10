@@ -5,6 +5,8 @@ const morgan = require('morgan');
 const { pool } = require('./config/database');
 const uploadRoutes = require('./routes/uploads');
 const fileRoutes = require('./routes/files');
+const authRoutes = require('./routes/auth');
+const { authenticateToken } = require('./middleware/auth');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -26,8 +28,9 @@ app.get('/health', async (req, res) => {
 });
 
 // Routes
-app.use('/api/uploads', uploadRoutes);
-app.use('/api/files', fileRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/uploads', authenticateToken, uploadRoutes);
+app.use('/api/files', authenticateToken, fileRoutes);
 
 // Error handler
 app.use((err, req, res, next) => {
