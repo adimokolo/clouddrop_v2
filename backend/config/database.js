@@ -16,6 +16,16 @@ const initDB = async () => {
   const client = await pool.connect();
   try {
     await client.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        email VARCHAR(255) NOT NULL UNIQUE,
+        password_hash VARCHAR(255) NOT NULL,
+        full_name VARCHAR(200),
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        updated_at TIMESTAMPTZ DEFAULT NOW()
+      );
+      CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+
       CREATE TABLE IF NOT EXISTS files (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         original_name VARCHAR(500) NOT NULL,
@@ -34,16 +44,13 @@ const initDB = async () => {
         updated_at TIMESTAMPTZ DEFAULT NOW(),
         expires_at TIMESTAMPTZ
       );
-
       CREATE INDEX IF NOT EXISTS idx_files_folder ON files(folder);
       CREATE INDEX IF NOT EXISTS idx_files_created_at ON files(created_at DESC);
       CREATE INDEX IF NOT EXISTS idx_files_mime_type ON files(mime_type);
-
       CREATE OR REPLACE FUNCTION update_updated_at()
       RETURNS TRIGGER AS $$
       BEGIN NEW.updated_at = NOW(); RETURN NEW; END;
       $$ language 'plpgsql';
-
       DROP TRIGGER IF EXISTS update_files_updated_at ON files;
       CREATE TRIGGER update_files_updated_at
         BEFORE UPDATE ON files
